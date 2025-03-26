@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Layout from '@/components/Layout';
 import Hero from '@/components/Hero';
@@ -6,7 +5,7 @@ import Container from '@/components/ui/container';
 import ResourceMap from '@/components/ResourceMap';
 import ServiceCard from '@/components/ServiceCard';
 import ResumeBuilder from '@/components/ResumeBuilder';
-import { ArrowRight, ArrowUpRight, BarChart3, Users, Star, Briefcase } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, BarChart3, Users, Star, Briefcase, FileText } from 'lucide-react';
 
 // Mock data for services - would come from your API
 const services = [
