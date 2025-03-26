@@ -1,10 +1,14 @@
-
 import React, { useState } from 'react';
 import { Search, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const PostcodeSearch = () => {
-  const [postcode, setPostcode] = useState('');
+interface PostcodeSearchProps {
+  onSubmit?: (postcode: string) => void;
+  initialValue?: string;
+}
+
+const PostcodeSearch = ({ onSubmit, initialValue = '' }: PostcodeSearchProps) => {
+  const [postcode, setPostcode] = useState(initialValue);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -27,12 +31,17 @@ const PostcodeSearch = () => {
     setError('');
     setIsLoading(true);
     
-    // This would normally check the postcode validity against an API
-    // For demo purposes, we'll just simulate a delay and redirect
-    setTimeout(() => {
+    // If onSubmit prop is provided, use it
+    if (onSubmit) {
+      onSubmit(postcode);
       setIsLoading(false);
-      navigate(`/resources?postcode=${encodeURIComponent(postcode)}`);
-    }, 800);
+    } else {
+      // Otherwise use the default navigation behavior
+      setTimeout(() => {
+        setIsLoading(false);
+        navigate(`/resources?postcode=${encodeURIComponent(postcode)}`);
+      }, 800);
+    }
   };
 
   return (
