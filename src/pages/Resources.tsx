@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -14,7 +13,6 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/components/Auth/AuthContext';
 
-// Mock data for services - would come from your API
 const services = [
   {
     id: '1',
@@ -101,7 +99,6 @@ const Resources = () => {
   const { isAuthenticated } = useAuth();
   
   useEffect(() => {
-    // When component mounts, set the postcode from URL params
     setPostcode(initialPostcode);
   }, [initialPostcode]);
   
@@ -128,7 +125,6 @@ const Resources = () => {
       title: "Postcode Updated",
       description: `Showing resources near ${code}`,
     });
-    // In a real app, this would trigger a new search for resources
     console.log(`Searching for resources near ${code}`);
   };
 
@@ -201,8 +197,7 @@ const Resources = () => {
       <section className="py-8">
         <Container>
           <AdBanner 
-            position="top"
-            format="banner"
+            type="banner"
             className="mb-8 hidden md:block"
           />
           
@@ -240,8 +235,7 @@ const Resources = () => {
               </div>
               
               <AdBanner 
-                position="middle"
-                format="rectangle"
+                type="inline"
                 className="my-6"
               />
               
@@ -301,8 +295,7 @@ const Resources = () => {
           </div>
           
           <AdBanner 
-            position="bottom"
-            format="leaderboard"
+            type="sidebar"
             className="mt-8"
           />
         </Container>
