@@ -1,13 +1,18 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import Container from '@/components/ui/container';
 import ResourceMap from '@/components/ResourceMap';
 import ServiceCard from '@/components/ServiceCard';
 import PostcodeSearch from '@/components/PostcodeSearch';
+import PremiumResourcesCard from '@/components/Monetization/PremiumResourcesCard';
+import { AdBanner } from '@/components/Monetization/AdBanner';
 import { Button } from '@/components/ui/button';
 import { Filter, MapPin, Search, ArrowUpDown } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/components/Auth/AuthContext';
 
 // Mock data for services - would come from your API
 const services = [
@@ -86,9 +91,19 @@ const services = [
 ];
 
 const Resources = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialPostcode = searchParams.get('postcode') || 'E1 6LP';
+  
   const [searchQuery, setSearchQuery] = useState('');
-  const [postcode, setPostcode] = useState('E1 6LP');
+  const [postcode, setPostcode] = useState(initialPostcode);
   const [filteredServices, setFilteredServices] = useState(services);
+  const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
+  
+  useEffect(() => {
+    // When component mounts, set the postcode from URL params
+    setPostcode(initialPostcode);
+  }, [initialPostcode]);
   
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -108,8 +123,29 @@ const Resources = () => {
   
   const handlePostcodeSubmit = (code: string) => {
     setPostcode(code);
-    // In a real app, this would trigger a new search for resources near this postcode
+    setSearchParams({ postcode: code });
+    toast({
+      title: "Postcode Updated",
+      description: `Showing resources near ${code}`,
+    });
+    // In a real app, this would trigger a new search for resources
     console.log(`Searching for resources near ${code}`);
+  };
+
+  const handleAddResource = () => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Login Required",
+        description: "Please login to add resources",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    toast({
+      title: "Add Resource",
+      description: "Coming soon! We're working on this feature.",
+    });
   };
 
   return (
@@ -127,7 +163,10 @@ const Resources = () => {
             <div className="grid gap-6 md:grid-cols-2">
               <div className="flex items-center gap-2">
                 <div className="flex-1">
-                  <PostcodeSearch onSubmit={handlePostcodeSubmit} initialValue={postcode} />
+                  <PostcodeSearch 
+                    onSubmit={handlePostcodeSubmit} 
+                    initialValue={postcode} 
+                  />
                 </div>
                 <Button variant="outline" size="icon" className="shrink-0">
                   <Filter className="h-4 w-4" />
@@ -161,6 +200,12 @@ const Resources = () => {
       
       <section className="py-8">
         <Container>
+          <AdBanner 
+            position="top"
+            format="banner"
+            className="mb-8 hidden md:block"
+          />
+          
           <div className="grid gap-8 lg:grid-cols-3">
             <div className="lg:col-span-2">
               <div className="bg-card rounded-lg border shadow-sm overflow-hidden">
@@ -194,12 +239,18 @@ const Resources = () => {
                 )}
               </div>
               
-              <div className="mt-6 bg-primary/5 rounded-lg p-4 flex items-center justify-between">
+              <AdBanner 
+                position="middle"
+                format="rectangle"
+                className="my-6"
+              />
+              
+              <div className="mt-6 bg-primary/5 rounded-lg p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div>
                   <h3 className="font-medium">Know of a local resource?</h3>
                   <p className="text-sm text-muted-foreground">Help your community by adding it to our database</p>
                 </div>
-                <Button>Add a Resource</Button>
+                <Button onClick={handleAddResource}>Add a Resource</Button>
               </div>
             </div>
             
@@ -208,6 +259,8 @@ const Resources = () => {
                 <div className="bg-card rounded-lg border shadow-sm overflow-hidden">
                   <ResourceMap />
                 </div>
+                
+                <PremiumResourcesCard />
                 
                 <div className="bg-card rounded-lg border shadow-sm p-4">
                   <h3 className="font-medium mb-2">Popular Resource Types</h3>
@@ -246,6 +299,12 @@ const Resources = () => {
               </div>
             </div>
           </div>
+          
+          <AdBanner 
+            position="bottom"
+            format="leaderboard"
+            className="mt-8"
+          />
         </Container>
       </section>
     </Layout>
