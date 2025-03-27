@@ -1,8 +1,21 @@
 
 import React from 'react';
-import { FileText, Lock } from 'lucide-react';
+import { FileText, Lock, Check } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 const ResumeBuilder = () => {
+  const navigate = useNavigate();
+  
+  const handleTryFree = () => {
+    navigate('/resume');
+  };
+  
+  const handleUpgrade = () => {
+    // This would typically open a premium modal
+    navigate('/resume?showUpgrade=true');
+  };
+
   return (
     <div className="bg-card rounded-lg border shadow-sm overflow-hidden">
       <div className="p-6">
@@ -46,12 +59,20 @@ const ResumeBuilder = () => {
         </div>
         
         <div className="flex items-center justify-between gap-4">
-          <button className="flex-1 py-2.5 px-4 rounded-md bg-secondary hover:bg-secondary/80 transition-colors text-sm font-medium">
+          <Button 
+            variant="secondary"
+            className="flex-1" 
+            onClick={handleTryFree}
+          >
             Try Free
-          </button>
-          <button className="flex-1 py-2.5 px-4 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium">
+          </Button>
+          <Button 
+            variant="default"
+            className="flex-1" 
+            onClick={handleUpgrade}
+          >
             Upgrade (£5/month)
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -74,9 +95,7 @@ const FeatureItem = ({
       {isLocked ? (
         <Lock className="h-3 w-3 text-muted-foreground" />
       ) : (
-        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
-          <polyline points="20 6 9 17 4 12" />
-        </svg>
+        <Check className="h-3 w-3 text-primary" />
       )}
     </div>
     <div>
