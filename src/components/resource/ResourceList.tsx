@@ -2,6 +2,7 @@
 import React from 'react';
 import ServiceCard from '@/components/ServiceCard';
 import { AdBanner } from '@/components/Monetization/AdBanner';
+import { ClickbankAffiliate } from '@/components/Monetization/ClickbankAffiliate';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
@@ -56,6 +57,13 @@ const ResourceList: React.FC<ResourceListProps> = ({ services, onAddResource }) 
           </div>
         )}
       </div>
+      
+      <ClickbankAffiliate 
+        contextKeywords={['career', 'employment', 'training']}
+        layout="grid"
+        maxProducts={2}
+        className="my-6"
+      />
       
       <AdBanner 
         type="inline"

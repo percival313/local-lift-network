@@ -2,6 +2,7 @@
 import React from 'react';
 import ResourceMap from '@/components/ResourceMap';
 import PremiumResourcesCard from '@/components/Monetization/PremiumResourcesCard';
+import { ClickbankAffiliate } from '@/components/Monetization/ClickbankAffiliate';
 import { Button } from '@/components/ui/button';
 
 const ResourceSidebar: React.FC = () => {
@@ -12,6 +13,12 @@ const ResourceSidebar: React.FC = () => {
       </div>
       
       <PremiumResourcesCard />
+      
+      <ClickbankAffiliate 
+        contextKeywords={['career', 'resources', 'employment']}
+        layout="compact"
+        className="mb-4"
+      />
       
       <div className="bg-card rounded-lg border shadow-sm p-4">
         <h3 className="font-medium mb-2">Popular Resource Types</h3>

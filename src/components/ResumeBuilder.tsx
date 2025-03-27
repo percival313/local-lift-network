@@ -3,6 +3,7 @@ import React from 'react';
 import { FileText, Lock, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { ClickbankAffiliate } from '@/components/Monetization/ClickbankAffiliate';
 
 const ResumeBuilder = () => {
   const navigate = useNavigate();
@@ -73,6 +74,14 @@ const ResumeBuilder = () => {
           >
             Upgrade (£5/month)
           </Button>
+        </div>
+        
+        <div className="mt-6 pt-6 border-t">
+          <ClickbankAffiliate 
+            contextKeywords={['resume', 'career', 'employment']}
+            layout="list"
+            maxProducts={1}
+          />
         </div>
       </div>
     </div>
