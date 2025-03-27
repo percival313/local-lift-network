@@ -14,9 +14,12 @@ import ResourceSidebar from '@/components/resource/ResourceSidebar';
 const Resources = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialPostcode = searchParams.get('postcode') || 'E1 6LP';
+  const initialDistance = searchParams.get('distance') ? parseInt(searchParams.get('distance') || '5') : 5;
   
   const [searchQuery, setSearchQuery] = useState('');
   const [postcode, setPostcode] = useState(initialPostcode);
+  const [distanceRange, setDistanceRange] = useState(initialDistance);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [filteredServices, setFilteredServices] = useState(services);
   const { toast } = useToast();
   const { isAuthenticated } = useAuth();
@@ -27,28 +30,73 @@ const Resources = () => {
   
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    if (!query) {
-      setFilteredServices(services);
-      return;
-    }
-    
-    const filtered = services.filter(service => 
-      service.name.toLowerCase().includes(query.toLowerCase()) ||
-      service.description.toLowerCase().includes(query.toLowerCase()) ||
-      service.type.toLowerCase().includes(query.toLowerCase())
-    );
-    
-    setFilteredServices(filtered);
+    applyFilters(query, selectedTypes, distanceRange);
   };
   
   const handlePostcodeSubmit = (code: string) => {
     setPostcode(code);
-    setSearchParams({ postcode: code });
+    setSearchParams(params => {
+      params.set('postcode', code);
+      return params;
+    });
     toast({
       title: "Postcode Updated",
       description: `Showing resources near ${code}`,
     });
-    console.log(`Searching for resources near ${code}`);
+    applyFilters(searchQuery, selectedTypes, distanceRange);
+  };
+
+  const handleDistanceChange = (distance: number) => {
+    setDistanceRange(distance);
+    setSearchParams(params => {
+      params.set('distance', distance.toString());
+      return params;
+    });
+    applyFilters(searchQuery, selectedTypes, distance);
+  };
+
+  const handleTypeToggle = (type: string) => {
+    const updated = selectedTypes.includes(type)
+      ? selectedTypes.filter(t => t !== type)
+      : [...selectedTypes, type];
+    
+    setSelectedTypes(updated);
+    applyFilters(searchQuery, updated, distanceRange);
+  };
+
+  const applyFilters = (query: string, types: string[], distance: number) => {
+    // Start with all services
+    let filtered = services;
+    
+    // Apply search query filter
+    if (query) {
+      filtered = filtered.filter(service => 
+        service.name.toLowerCase().includes(query.toLowerCase()) ||
+        service.description.toLowerCase().includes(query.toLowerCase()) ||
+        service.type.toLowerCase().includes(query.toLowerCase())
+      );
+    }
+    
+    // Apply type filter
+    if (types.length > 0) {
+      filtered = filtered.filter(service => 
+        types.some(type => service.type.toLowerCase().includes(type.toLowerCase()))
+      );
+    }
+    
+    // In a real app, we would apply distance filtering here
+    // For now, we'll simulate it by showing fewer resources as distance decreases
+    if (distance < 10) {
+      filtered = filtered.filter((_, index) => index < filtered.length * (distance / 10));
+    }
+    
+    setFilteredServices(filtered);
+    
+    toast({
+      title: "Filters Applied",
+      description: `Showing ${filtered.length} resources within ${distance} miles`,
+      variant: filtered.length === 0 ? "destructive" : "default",
+    });
   };
 
   const handleAddResource = () => {
@@ -90,7 +138,12 @@ const Resources = () => {
             />
             
             <div>
-              <ResourceSidebar />
+              <ResourceSidebar 
+                distanceRange={distanceRange}
+                onDistanceChange={handleDistanceChange}
+                selectedTypes={selectedTypes}
+                onTypeToggle={handleTypeToggle}
+              />
             </div>
           </div>
           

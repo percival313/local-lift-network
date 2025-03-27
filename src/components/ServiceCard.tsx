@@ -1,7 +1,9 @@
 
-import React from 'react';
-import { MapPin, Clock, ExternalLink, ThumbsUp, ThumbsDown } from 'lucide-react';
+import React, { useState } from 'react';
+import { MapPin, Clock, ExternalLink, ThumbsUp, ThumbsDown, Bookmark, Share2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/components/Auth/AuthContext';
 
 interface ServiceCardProps {
   id: string;
@@ -28,6 +30,94 @@ const ServiceCard = ({
   upvotes,
   downvotes
 }: ServiceCardProps) => {
+  const [isSaved, setIsSaved] = useState(false);
+  const [localUpvotes, setLocalUpvotes] = useState(upvotes);
+  const [localDownvotes, setLocalDownvotes] = useState(downvotes);
+  const [userVote, setUserVote] = useState<'up' | 'down' | null>(null);
+  const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
+
+  const handleSave = () => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Login Required",
+        description: "Please login to save resources",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSaved(!isSaved);
+    toast({
+      title: isSaved ? "Resource Removed" : "Resource Saved",
+      description: isSaved ? `${name} has been removed from your saved resources` : `${name} has been saved for later`,
+    });
+  };
+
+  const handleVote = (voteType: 'up' | 'down') => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Login Required",
+        description: "Please login to vote on resources",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // If user already voted this way, remove their vote
+    if (userVote === voteType) {
+      if (voteType === 'up') {
+        setLocalUpvotes(prev => prev - 1);
+      } else {
+        setLocalDownvotes(prev => prev - 1);
+      }
+      setUserVote(null);
+    } 
+    // If user voted the other way, switch their vote
+    else if (userVote !== null) {
+      if (voteType === 'up') {
+        setLocalUpvotes(prev => prev + 1);
+        setLocalDownvotes(prev => prev - 1);
+      } else {
+        setLocalUpvotes(prev => prev - 1);
+        setLocalDownvotes(prev => prev + 1);
+      }
+      setUserVote(voteType);
+    } 
+    // If user hasn't voted yet, add their vote
+    else {
+      if (voteType === 'up') {
+        setLocalUpvotes(prev => prev + 1);
+      } else {
+        setLocalDownvotes(prev => prev + 1);
+      }
+      setUserVote(voteType);
+    }
+  };
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: name,
+        text: `Check out this resource: ${name}`,
+        url: window.location.href.split('?')[0] + `/service/${id}`,
+      }).then(() => {
+        toast({
+          title: "Shared Successfully",
+          description: "Thank you for sharing this resource",
+        });
+      }).catch(console.error);
+    } else {
+      // Fallback for browsers that don't support navigator.share
+      navigator.clipboard.writeText(window.location.href.split('?')[0] + `/service/${id}`).then(() => {
+        toast({
+          title: "Link Copied",
+          description: "Resource link copied to clipboard",
+        });
+      });
+    }
+  };
+
   return (
     <div className="bg-card rounded-lg border shadow-sm transition-all duration-300 hover:shadow-md overflow-hidden">
       <div className="p-5">
@@ -56,26 +146,48 @@ const ServiceCard = ({
         
         <div className="flex items-center justify-between pt-3 border-t">
           <div className="flex items-center space-x-3">
-            <button className="flex items-center text-sm text-muted-foreground hover:text-foreground">
+            <button 
+              className={`flex items-center text-sm ${userVote === 'up' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+              onClick={() => handleVote('up')}
+            >
               <ThumbsUp className="h-3.5 w-3.5 mr-1" />
-              <span className="text-xs">{upvotes}</span>
+              <span className="text-xs">{localUpvotes}</span>
             </button>
-            <button className="flex items-center text-sm text-muted-foreground hover:text-foreground">
+            <button 
+              className={`flex items-center text-sm ${userVote === 'down' ? 'text-destructive' : 'text-muted-foreground hover:text-foreground'}`}
+              onClick={() => handleVote('down')}
+            >
               <ThumbsDown className="h-3.5 w-3.5 mr-1" />
-              <span className="text-xs">{downvotes}</span>
+              <span className="text-xs">{localDownvotes}</span>
             </button>
             <span className="text-xs text-muted-foreground">
               Updated {lastUpdated}
             </span>
           </div>
           
-          <Link
-            to={`/service/${id}`}
-            className="inline-flex items-center text-xs text-primary hover:underline"
-          >
-            View details
-            <ExternalLink className="h-3 w-3 ml-1" />
-          </Link>
+          <div className="flex items-center space-x-2">
+            <button 
+              onClick={handleSave}
+              className={`p-1 rounded-full ${isSaved ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-foreground'}`}
+              title={isSaved ? "Remove from saved" : "Save for later"}
+            >
+              <Bookmark className="h-4 w-4" fill={isSaved ? "currentColor" : "none"} />
+            </button>
+            <button 
+              onClick={handleShare}
+              className="p-1 rounded-full text-muted-foreground hover:text-foreground"
+              title="Share this resource"
+            >
+              <Share2 className="h-4 w-4" />
+            </button>
+            <Link
+              to={`/service/${id}`}
+              className="p-1 rounded-full text-primary hover:text-primary/80"
+              title="View details"
+            >
+              <ExternalLink className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
       </div>
     </div>
