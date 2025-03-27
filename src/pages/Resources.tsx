@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -65,10 +64,8 @@ const Resources = () => {
   };
 
   const applyFilters = (query: string, types: string[], distance: number) => {
-    // Start with all services
     let filtered = services;
     
-    // Apply search query filter
     if (query) {
       filtered = filtered.filter(service => 
         service.name.toLowerCase().includes(query.toLowerCase()) ||
@@ -77,15 +74,12 @@ const Resources = () => {
       );
     }
     
-    // Apply type filter
     if (types.length > 0) {
       filtered = filtered.filter(service => 
         types.some(type => service.type.toLowerCase().includes(type.toLowerCase()))
       );
     }
     
-    // In a real app, we would apply distance filtering here
-    // For now, we'll simulate it by showing fewer resources as distance decreases
     if (distance < 10) {
       filtered = filtered.filter((_, index) => index < filtered.length * (distance / 10));
     }
@@ -146,11 +140,6 @@ const Resources = () => {
               />
             </div>
           </div>
-          
-          <AdBanner 
-            type="sidebar"
-            className="mt-8"
-          />
         </Container>
       </section>
     </Layout>

@@ -200,11 +200,28 @@ const ResourceList: React.FC<ResourceListProps> = ({ services, onAddResource }) 
             </Alert>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 gap-4 p-4">
-            {services.map(service => (
-              <ServiceCard key={service.id} {...service} />
-            ))}
-          </div>
+          <>
+            <div className="grid md:grid-cols-2 gap-4 p-4">
+              {services.slice(0, 4).map(service => (
+                <ServiceCard key={service.id} {...service} />
+              ))}
+            </div>
+            
+            {services.length > 4 && (
+              <>
+                <AdBanner 
+                  type="inline"
+                  className="mx-4"
+                />
+                
+                <div className="grid md:grid-cols-2 gap-4 p-4">
+                  {services.slice(4).map(service => (
+                    <ServiceCard key={service.id} {...service} />
+                  ))}
+                </div>
+              </>
+            )}
+          </>
         )}
         
         {services.length > 0 && (
@@ -216,17 +233,14 @@ const ResourceList: React.FC<ResourceListProps> = ({ services, onAddResource }) 
         )}
       </div>
       
-      <ClickbankAffiliate 
-        contextKeywords={['career', 'employment', 'training']}
-        layout="grid"
-        maxProducts={2}
-        className="my-6"
-      />
-      
-      <AdBanner 
-        type="inline"
-        className="my-6"
-      />
+      <div className="mt-6">
+        <ClickbankAffiliate 
+          contextKeywords={['career', 'employment', 'training']}
+          layout="list"
+          maxProducts={1}
+          className="bg-background rounded-lg border shadow-sm mb-6 p-4"
+        />
+      </div>
       
       <div className="mt-6 bg-primary/5 rounded-lg p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>

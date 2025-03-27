@@ -60,13 +60,9 @@ export const AdBanner: React.FC<AdBannerProps> = ({ type, className = '' }) => {
   
   if (type === 'sidebar') {
     return (
-      <div className={`bg-card rounded-lg border p-4 ${className}`}>
-        <div className="flex justify-between items-center mb-2">
-          <h3 className="font-medium text-sm">Sponsored</h3>
-          <span className="text-xs text-muted-foreground hover:underline cursor-pointer">Ad</span>
-        </div>
+      <div className={`bg-background border border-border/40 rounded-lg p-4 ${className}`}>
         <div className="space-y-2">
-          <div className="aspect-video bg-muted rounded-md overflow-hidden">
+          <div className="aspect-video bg-muted/50 rounded-md overflow-hidden">
             <img src={ad.imageUrl} alt={ad.title} className="w-full h-full object-cover" />
           </div>
           <h4 className="font-medium text-sm">{ad.title}</h4>
@@ -75,15 +71,15 @@ export const AdBanner: React.FC<AdBannerProps> = ({ type, className = '' }) => {
             href={ad.linkUrl} 
             target="_blank" 
             rel="noopener noreferrer" 
-            className="flex items-center text-xs text-primary hover:underline mt-2"
+            className="flex items-center text-xs text-primary hover:underline mt-1"
             onClick={handleClick}
           >
             Learn More
             <ExternalLink className="h-3 w-3 ml-1" />
           </a>
         </div>
-        <div className="mt-2 text-xs text-muted-foreground">
-          Ad by {ad.advertiser}
+        <div className="mt-2 text-xs text-muted-foreground/60 text-right">
+          Suggested by {ad.advertiser}
         </div>
       </div>
     );
@@ -91,14 +87,11 @@ export const AdBanner: React.FC<AdBannerProps> = ({ type, className = '' }) => {
   
   if (type === 'banner') {
     return (
-      <div className={`bg-card rounded-lg border p-4 ${className}`}>
+      <div className={`bg-background border-border/40 border-b pb-4 mb-6 ${className}`}>
         <div className="flex justify-between">
           <div className="flex-1 pr-4">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="font-medium">{ad.title}</h3>
-              <span className="text-xs text-muted-foreground hover:underline cursor-pointer">Ad</span>
-            </div>
-            <p className="text-sm text-muted-foreground mb-3">{ad.description}</p>
+            <h3 className="font-medium mb-1">{ad.title}</h3>
+            <p className="text-sm text-muted-foreground mb-2">{ad.description}</p>
             <a 
               href={ad.linkUrl} 
               target="_blank" 
@@ -111,13 +104,13 @@ export const AdBanner: React.FC<AdBannerProps> = ({ type, className = '' }) => {
             </a>
           </div>
           <div className="w-1/3 max-w-[200px]">
-            <div className="aspect-video bg-muted rounded-md overflow-hidden">
+            <div className="aspect-video bg-muted/50 rounded-md overflow-hidden">
               <img src={ad.imageUrl} alt={ad.title} className="w-full h-full object-cover" />
             </div>
           </div>
         </div>
-        <div className="mt-2 text-xs text-muted-foreground">
-          Ad by {ad.advertiser}
+        <div className="mt-2 text-xs text-muted-foreground/60 text-right">
+          Suggested by {ad.advertiser}
         </div>
       </div>
     );
@@ -125,21 +118,25 @@ export const AdBanner: React.FC<AdBannerProps> = ({ type, className = '' }) => {
   
   // Inline ad (smallest)
   return (
-    <div className={`bg-muted/30 rounded-lg p-3 text-sm ${className}`}>
-      <div className="flex justify-between items-center mb-1">
-        <p className="font-medium text-xs">{ad.title}</p>
-        <span className="text-[10px] text-muted-foreground hover:underline cursor-pointer">Ad</span>
+    <div className={`border-t border-b border-border/40 py-3 my-6 ${className}`}>
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="font-medium text-xs">{ad.title}</p>
+          <a 
+            href={ad.linkUrl} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-xs text-primary hover:underline inline-flex items-center"
+            onClick={handleClick}
+          >
+            Learn More
+            <ExternalLink className="h-2 w-2 ml-1" />
+          </a>
+        </div>
+        <div className="text-[10px] text-muted-foreground/60">
+          Suggested by {ad.advertiser}
+        </div>
       </div>
-      <a 
-        href={ad.linkUrl} 
-        target="_blank" 
-        rel="noopener noreferrer" 
-        className="text-xs text-primary hover:underline inline-flex items-center"
-        onClick={handleClick}
-      >
-        Learn More
-        <ExternalLink className="h-2 w-2 ml-1" />
-      </a>
     </div>
   );
 };

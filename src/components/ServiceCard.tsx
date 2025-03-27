@@ -164,6 +164,7 @@ const ServiceCard = ({
               <button 
                 className={`flex items-center text-sm ${userVote === 'up' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
                 onClick={() => handleVote('up')}
+                aria-label="Upvote"
               >
                 <ThumbsUp className="h-3.5 w-3.5 mr-1" />
                 <span className="text-xs">{localUpvotes}</span>
@@ -171,6 +172,7 @@ const ServiceCard = ({
               <button 
                 className={`flex items-center text-sm ${userVote === 'down' ? 'text-destructive' : 'text-muted-foreground hover:text-foreground'}`}
                 onClick={() => handleVote('down')}
+                aria-label="Downvote"
               >
                 <ThumbsDown className="h-3.5 w-3.5 mr-1" />
                 <span className="text-xs">{localDownvotes}</span>
@@ -183,29 +185,29 @@ const ServiceCard = ({
             <div className="flex items-center space-x-2">
               <button 
                 onClick={handleOpenNotes}
-                className="p-1 rounded-full text-muted-foreground hover:text-foreground"
-                title="Add notes or tasks"
+                className="p-1 rounded-full text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Add notes or tasks"
               >
                 <StickyNote className="h-4 w-4" />
               </button>
               <button 
                 onClick={handleSave}
-                className={`p-1 rounded-full ${isSaved ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-foreground'}`}
-                title={isSaved ? "Remove from saved" : "Save for later"}
+                className={`p-1 rounded-full transition-colors ${isSaved ? 'text-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}
+                aria-label={isSaved ? "Remove from saved" : "Save for later"}
               >
                 <Bookmark className="h-4 w-4" fill={isSaved ? "currentColor" : "none"} />
               </button>
               <button 
                 onClick={handleShare}
-                className="p-1 rounded-full text-muted-foreground hover:text-foreground"
-                title="Share this resource"
+                className="p-1 rounded-full text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Share this resource"
               >
                 <Share2 className="h-4 w-4" />
               </button>
               <Link
                 to={`/service/${id}`}
-                className="p-1 rounded-full text-primary hover:text-primary/80"
-                title="View details"
+                className="p-1 rounded-full text-primary hover:text-primary/80 transition-colors"
+                aria-label="View details"
               >
                 <ExternalLink className="h-4 w-4" />
               </Link>
