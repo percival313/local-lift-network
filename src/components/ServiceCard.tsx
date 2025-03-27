@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
-import { MapPin, Clock, ExternalLink, ThumbsUp, ThumbsDown, Bookmark, Share2 } from 'lucide-react';
+import { MapPin, Clock, ExternalLink, ThumbsUp, ThumbsDown, Bookmark, Share2, StickyNote } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/components/Auth/AuthContext';
+import ResourceNotes from './Notes/ResourceNotes';
 
 interface ServiceCardProps {
   id: string;
@@ -34,6 +35,7 @@ const ServiceCard = ({
   const [localUpvotes, setLocalUpvotes] = useState(upvotes);
   const [localDownvotes, setLocalDownvotes] = useState(downvotes);
   const [userVote, setUserVote] = useState<'up' | 'down' | null>(null);
+  const [isNotesOpen, setIsNotesOpen] = useState(false);
   const { toast } = useToast();
   const { isAuthenticated } = useAuth();
 
@@ -118,79 +120,107 @@ const ServiceCard = ({
     }
   };
 
+  const handleOpenNotes = () => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Login Required",
+        description: "Please login to add notes and tasks",
+        variant: "destructive",
+      });
+      return;
+    }
+    setIsNotesOpen(true);
+  };
+
   return (
-    <div className="bg-card rounded-lg border shadow-sm transition-all duration-300 hover:shadow-md overflow-hidden">
-      <div className="p-5">
-        <div className="flex justify-between items-start mb-3">
-          <div>
-            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-primary/10 text-primary mb-2`}>
-              {type}
-            </span>
-            <h3 className="text-lg font-medium">{name}</h3>
-          </div>
-          <span className="text-xs text-muted-foreground">{distance}</span>
-        </div>
-        
-        <p className="text-sm text-muted-foreground mb-4">{description}</p>
-        
-        <div className="space-y-2 mb-4">
-          <div className="flex items-start text-sm">
-            <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 mr-2 flex-shrink-0" />
-            <span className="text-sm">{address}</span>
-          </div>
-          <div className="flex items-start text-sm">
-            <Clock className="h-4 w-4 text-muted-foreground mt-0.5 mr-2 flex-shrink-0" />
-            <span className="text-sm">{openingHours}</span>
-          </div>
-        </div>
-        
-        <div className="flex items-center justify-between pt-3 border-t">
-          <div className="flex items-center space-x-3">
-            <button 
-              className={`flex items-center text-sm ${userVote === 'up' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
-              onClick={() => handleVote('up')}
-            >
-              <ThumbsUp className="h-3.5 w-3.5 mr-1" />
-              <span className="text-xs">{localUpvotes}</span>
-            </button>
-            <button 
-              className={`flex items-center text-sm ${userVote === 'down' ? 'text-destructive' : 'text-muted-foreground hover:text-foreground'}`}
-              onClick={() => handleVote('down')}
-            >
-              <ThumbsDown className="h-3.5 w-3.5 mr-1" />
-              <span className="text-xs">{localDownvotes}</span>
-            </button>
-            <span className="text-xs text-muted-foreground">
-              Updated {lastUpdated}
-            </span>
+    <>
+      <div className="bg-card rounded-lg border shadow-sm transition-all duration-300 hover:shadow-md overflow-hidden">
+        <div className="p-5">
+          <div className="flex justify-between items-start mb-3">
+            <div>
+              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-primary/10 text-primary mb-2`}>
+                {type}
+              </span>
+              <h3 className="text-lg font-medium">{name}</h3>
+            </div>
+            <span className="text-xs text-muted-foreground">{distance}</span>
           </div>
           
-          <div className="flex items-center space-x-2">
-            <button 
-              onClick={handleSave}
-              className={`p-1 rounded-full ${isSaved ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-foreground'}`}
-              title={isSaved ? "Remove from saved" : "Save for later"}
-            >
-              <Bookmark className="h-4 w-4" fill={isSaved ? "currentColor" : "none"} />
-            </button>
-            <button 
-              onClick={handleShare}
-              className="p-1 rounded-full text-muted-foreground hover:text-foreground"
-              title="Share this resource"
-            >
-              <Share2 className="h-4 w-4" />
-            </button>
-            <Link
-              to={`/service/${id}`}
-              className="p-1 rounded-full text-primary hover:text-primary/80"
-              title="View details"
-            >
-              <ExternalLink className="h-4 w-4" />
-            </Link>
+          <p className="text-sm text-muted-foreground mb-4">{description}</p>
+          
+          <div className="space-y-2 mb-4">
+            <div className="flex items-start text-sm">
+              <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 mr-2 flex-shrink-0" />
+              <span className="text-sm">{address}</span>
+            </div>
+            <div className="flex items-start text-sm">
+              <Clock className="h-4 w-4 text-muted-foreground mt-0.5 mr-2 flex-shrink-0" />
+              <span className="text-sm">{openingHours}</span>
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-between pt-3 border-t">
+            <div className="flex items-center space-x-3">
+              <button 
+                className={`flex items-center text-sm ${userVote === 'up' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                onClick={() => handleVote('up')}
+              >
+                <ThumbsUp className="h-3.5 w-3.5 mr-1" />
+                <span className="text-xs">{localUpvotes}</span>
+              </button>
+              <button 
+                className={`flex items-center text-sm ${userVote === 'down' ? 'text-destructive' : 'text-muted-foreground hover:text-foreground'}`}
+                onClick={() => handleVote('down')}
+              >
+                <ThumbsDown className="h-3.5 w-3.5 mr-1" />
+                <span className="text-xs">{localDownvotes}</span>
+              </button>
+              <span className="text-xs text-muted-foreground">
+                Updated {lastUpdated}
+              </span>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <button 
+                onClick={handleOpenNotes}
+                className="p-1 rounded-full text-muted-foreground hover:text-foreground"
+                title="Add notes or tasks"
+              >
+                <StickyNote className="h-4 w-4" />
+              </button>
+              <button 
+                onClick={handleSave}
+                className={`p-1 rounded-full ${isSaved ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-foreground'}`}
+                title={isSaved ? "Remove from saved" : "Save for later"}
+              >
+                <Bookmark className="h-4 w-4" fill={isSaved ? "currentColor" : "none"} />
+              </button>
+              <button 
+                onClick={handleShare}
+                className="p-1 rounded-full text-muted-foreground hover:text-foreground"
+                title="Share this resource"
+              >
+                <Share2 className="h-4 w-4" />
+              </button>
+              <Link
+                to={`/service/${id}`}
+                className="p-1 rounded-full text-primary hover:text-primary/80"
+                title="View details"
+              >
+                <ExternalLink className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      <ResourceNotes 
+        resourceId={id} 
+        resourceName={name} 
+        isOpen={isNotesOpen} 
+        onClose={() => setIsNotesOpen(false)} 
+      />
+    </>
   );
 };
 
