@@ -1,15 +1,15 @@
-
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ExternalLink } from 'lucide-react';
 import { useAuth } from '../Auth/AuthContext';
+import { adsenseConfig, adSlots, adFormats } from '@/config/adsConfig';
 
 interface AdBannerProps {
   type: 'sidebar' | 'banner' | 'inline';
   className?: string;
 }
 
-// Mock ad data - in a real app, this would come from an ad service or backend
-const ads = [
+// Mock ad data - used when AdSense is disabled or in test mode
+const mockAds = [
   {
     id: 1,
     title: 'Hiring Now: Digital Marketing Roles',
@@ -43,10 +43,56 @@ export const AdBanner: React.FC<AdBannerProps> = ({ type, className = '' }) => {
   if (user?.isPremium) {
     return null;
   }
+
+  // Determine if we should use real or mock ads
+  const useRealAds = adsenseConfig.enabled && 
+                     adsenseConfig.clientId !== 'ADSENSE_CLIENT_ID' && 
+                     !adsenseConfig.testMode;
   
+  useEffect(() => {
+    // Initialize AdSense if real ads are enabled
+    if (useRealAds && typeof window !== 'undefined') {
+      try {
+        // Create AdSense script
+        const adScript = document.createElement('script');
+        adScript.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseConfig.clientId}`;
+        adScript.async = true;
+        adScript.crossOrigin = 'anonymous';
+        
+        // Check if script already exists
+        if (!document.querySelector(`script[src*="adsbygoogle.js?client=${adsenseConfig.clientId}"]`)) {
+          document.head.appendChild(adScript);
+          console.log('AdSense script added to page');
+        }
+      } catch (error) {
+        console.error('Error initializing AdSense:', error);
+      }
+    }
+  }, [useRealAds]);
+
+  // If using real ads, return the appropriate AdSense container
+  if (useRealAds) {
+    const adFormat = adFormats[type];
+    
+    return (
+      <div className={`ad-container ${className}`}>
+        <ins className="adsbygoogle"
+             style={{ display: 'block', width: `${adFormat.width}px`, height: `${adFormat.height}px` }}
+             data-ad-client={adsenseConfig.clientId}
+             data-ad-slot={adSlots[type]}
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+          {`(adsbygoogle = window.adsbygoogle || []).push({});`}
+        </script>
+      </div>
+    );
+  }
+  
+  // Otherwise, show mock ads
   // Pick a random ad from our mock data
-  const randomIndex = Math.floor(Math.random() * ads.length);
-  const ad = ads[randomIndex];
+  const randomIndex = Math.floor(Math.random() * mockAds.length);
+  const ad = mockAds[randomIndex];
   
   // Log the impression (would be an API call in a real app)
   React.useEffect(() => {
