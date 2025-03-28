@@ -1,3 +1,4 @@
+
 # Welcome to your Lovable project
 
 ## Project info
@@ -36,23 +37,36 @@ npm i
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Free Hosting Options
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### GitHub Pages (Recommended)
 
-**Use GitHub Codespaces**
+1. Push this project to your GitHub repository
+2. Enable GitHub Pages in your repository settings:
+   - Go to Settings > Pages
+   - Set "Source" to "GitHub Actions"
+3. The site will automatically deploy when you push changes to the main branch
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Netlify (Alternative)
+
+1. Sign up for a free Netlify account at [netlify.com](https://netlify.com)
+2. Click "New site from Git"
+3. Connect your GitHub repository
+4. Set build command to: `npm run build`
+5. Set publish directory to: `dist`
+6. Click "Deploy site"
+
+### Vercel (Alternative)
+
+1. Sign up for a free Vercel account at [vercel.com](https://vercel.com)
+2. Click "Add New" > "Project"
+3. Connect your GitHub repository
+4. Vercel will automatically detect it's a Vite project
+5. Click "Deploy"
 
 ## What technologies are used for this project?
 
-This project is built with .
+This project is built with:
 
 - Vite
 - TypeScript
